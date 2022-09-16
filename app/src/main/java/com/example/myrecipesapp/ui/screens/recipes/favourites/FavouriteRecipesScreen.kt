@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -80,17 +81,21 @@ fun FavouriteRecipesScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .background(Brush.linearGradient(
-                        listOf(
-                            Color(0xFF3700B3),
-                            Color(0xFFFF9800)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFF3700B3),
+                                Color(0xFFFF9800)
+                            )
                         )
-                    ))
+                    )
             )
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxSize().padding(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
             ) {
                 Text(
                     text = "Search for a New Recipe",
@@ -117,8 +122,23 @@ fun FavouriteRecipesScreen(
             }
         }
     ) {
+        if (state.results.isEmpty()){
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize().padding(top = 8.dp)
+            ) {
+                Text(
+                    text ="You have no favourites...",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(bottom = 40.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 40.dp),
             contentPadding = PaddingValues(10.dp),
         ) {
             items(state.results.size) { i ->
