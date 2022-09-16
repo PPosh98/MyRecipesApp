@@ -1,4 +1,4 @@
-package com.example.azimrecipesapp.data.repository
+package com.example.myrecipesapp.repository
 
 import com.example.myrecipesapp.api.FetchAPI
 import com.example.myrecipesapp.model.recipeInfo.RecipeInfoModel
