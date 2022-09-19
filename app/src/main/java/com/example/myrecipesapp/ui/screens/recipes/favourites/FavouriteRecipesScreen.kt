@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.myrecipesapp.model.favouriteRecipes.FavouritesModel
+import com.example.myrecipesapp.model.recipes.ResultModel
 import com.example.myrecipesapp.ui.MainViewModel
 import com.example.myrecipesapp.ui.screens.destinations.LoginScreenDestination
 import com.example.myrecipesapp.ui.screens.destinations.RecipeDetailsScreenDestination
@@ -32,7 +34,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Destination
 @Composable
 fun FavouriteRecipesScreen(
@@ -126,87 +128,116 @@ fun FavouriteRecipesScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
                 Text(
                     text ="You have no favourites...",
                     fontSize = 20.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFFAAAAAA)
                 )
             }
         }
-        LazyColumn(
+        FavouritesList(
+            state = state,
+            onNavigate = { id -> navigator.navigate(RecipeDetailsScreenDestination(id)) },
+            onFavourite = { id -> viewModel.handleFavourite(id) }
+        )
+    }
+}
+
+@Composable
+fun FavouritesList(
+    state: FavouritesModel,
+    onNavigate: (Int) -> Unit,
+    onFavourite: (Int) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 40.dp),
+        contentPadding = PaddingValues(10.dp),
+    ) {
+        items(state.results.size) { i ->
+            val item = state.results[i]
+            FavouritesListItem(
+                item = item,
+                onNavigate = onNavigate,
+                onFavourite = onFavourite
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun FavouritesListItem(
+    item: ResultModel,
+    onNavigate: (Int) -> Unit,
+    onFavourite: (Int) -> Unit
+) {
+    Card(
+        onClick = { onNavigate(item.id) },
+        elevation = 5.dp,
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 40.dp),
-            contentPadding = PaddingValues(10.dp),
+                .height(200.dp)
         ) {
-            items(state.results.size) { i ->
-                val item = state.results[i]
-                Card(
-                    onClick = { navigator.navigate(RecipeDetailsScreenDestination(id = item.id)) },
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(15.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(200.dp)
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(item.image)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = item.title,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = item.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black
+                            ),
+                            startY = 300f
                         )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            Color.Transparent,
-                                            Color.Black
-                                        ),
-                                        startY = 300f
-                                    )
-                                )
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(12.dp),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Text(
-                                text = item.title,
-                                fontSize = 20.sp,
-                                color = Color.White
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(12.dp),
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            IconButton(onClick = {
-                                viewModel.handleFavourite(item.id)
-                            }) {
-                                Icon(
-                                    Icons.Filled.Delete,
-                                    contentDescription = "Delete",
-                                    tint = Color.Red,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                        }
-                    }
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Text(
+                    text = item.title,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(onClick = {
+                    onFavourite(item.id)
+                }) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red,
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
-                Spacer(Modifier.height(10.0.dp))
             }
         }
     }
+    Spacer(Modifier.height(10.0.dp))
 }

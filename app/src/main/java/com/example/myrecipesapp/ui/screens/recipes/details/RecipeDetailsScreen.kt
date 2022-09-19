@@ -32,7 +32,6 @@ import coil.request.ImageRequest
 import com.example.myrecipesapp.ui.MainViewModel
 import com.example.myrecipesapp.ui.screens.destinations.FavouriteRecipesScreenDestination
 import com.example.myrecipesapp.ui.screens.destinations.LoginScreenDestination
-import com.example.myrecipesapp.ui.screens.destinations.RecipesSearchScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -66,7 +65,7 @@ fun RecipeDetailsScreen(
                 color = MaterialTheme.colors.primary
             ) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                    IconButton(onClick = { navigator.navigate(RecipesSearchScreenDestination) }) {
+                    IconButton(onClick = { navigator.navigateUp() }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",

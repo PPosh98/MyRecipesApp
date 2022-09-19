@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.myrecipesapp.model.recipes.ResultModel
 import com.example.myrecipesapp.ui.MainViewModel
 import com.example.myrecipesapp.ui.screens.destinations.FavouriteRecipesScreenDestination
 import com.example.myrecipesapp.ui.screens.destinations.LoginScreenDestination
@@ -39,7 +40,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Destination
 @Composable
 fun RecipesSearchScreen(
@@ -50,8 +51,6 @@ fun RecipesSearchScreen(
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-
-    val scrollState = rememberLazyListState()
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -90,12 +89,14 @@ fun RecipesSearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .background(Brush.linearGradient(
-                        listOf(
-                            Color(0xFF3700B3),
-                            Color(0xFFFF9800)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFF3700B3),
+                                Color(0xFFFF9800)
+                            )
                         )
-                    ))
+                    )
             )
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -134,79 +135,11 @@ fun RecipesSearchScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 40.dp),
-            contentPadding = PaddingValues(10.dp)
-        ) {
-            items(state.items.size) { i ->
-                val item = state.items[i]
-                LaunchedEffect(scrollState) {
-                    if (i >= state.items.size - 1 && !state.endReached && !state.isLoading) {
-                        viewModel.loadNextItems()
-                    }
-                }
-                Card(
-                    onClick = {navigator.navigate(RecipeDetailsScreenDestination(id = item.id))},
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(15.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(200.dp)
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(item.image)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = item.title,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        Color.Black
-                                    ),
-                                    startY = 300f
-                                )
-                            )
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(12.dp),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Text(
-                                text = item.title,
-                                fontSize = 20.sp,
-                                color = Color.White
-                            )
-                        }
-
-                    }
-                }
-                Spacer(Modifier.height(10.0.dp))
-            }
-            item {
-                if (state.isLoading) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-        }
+        RecipesList(
+            state = state,
+            onLoadNextItems = { viewModel.loadNextItems() },
+            onNavigate = { id -> navigator.navigate(RecipeDetailsScreenDestination(id)) }
+        )
     }
 }
 
@@ -282,4 +215,99 @@ fun RecipesSearchBar(
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             ))
     }
+}
+
+@Composable
+fun RecipesList(
+    state: ScreenState,
+    onLoadNextItems: () -> Unit,
+    onNavigate: (Int) -> Unit
+){
+    val scrollState = rememberLazyListState()
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 40.dp),
+        contentPadding = PaddingValues(10.dp)
+    ) {
+        items(state.items.size) { i ->
+            val item = state.items[i]
+            LaunchedEffect(scrollState) {
+                if (i >= state.items.size - 1 && !state.endReached && !state.isLoading) {
+                    onLoadNextItems()
+                }
+            }
+            RecipesListItem(
+                item = item,
+                onNavigate = onNavigate
+            )
+        }
+        item {
+            if (state.isLoading) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun RecipesListItem(
+    onNavigate: (Int) -> Unit,
+    item: ResultModel
+){
+    Card(
+        onClick = { onNavigate(item.id) },
+        elevation = 5.dp,
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .height(200.dp)
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = item.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black
+                        ),
+                        startY = 300f
+                    )
+                )
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Text(
+                    text = item.title,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+
+        }
+    }
+    Spacer(Modifier.height(10.0.dp))
 }
