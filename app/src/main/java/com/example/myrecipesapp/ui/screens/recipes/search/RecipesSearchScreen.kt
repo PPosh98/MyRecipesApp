@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.myrecipesapp.BuildConfig
 import com.example.myrecipesapp.model.recipes.ResultModel
 import com.example.myrecipesapp.ui.MainViewModel
 import com.example.myrecipesapp.ui.screens.destinations.FavouriteRecipesScreenDestination
@@ -105,19 +106,23 @@ fun RecipesSearchScreen(
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
-                Text(
-                    text = "My Favourite Recipes",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            scope.launch {
-                                scaffoldState.drawerState.close()
-                            }
-                            navigator.navigate(FavouriteRecipesScreenDestination)
-                        }
-                )
+                when {
+                    BuildConfig.FLAVOR.contains("paid") ->
+                        Text(
+                            text = "My Favourite Recipes",
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .clickable {
+                                    scope.launch {
+                                        scaffoldState.drawerState.close()
+                                    }
+                                    navigator.navigate(FavouriteRecipesScreenDestination)
+                                }
+                        )
+                }
+
                 Text(
                     text = "Logout",
                     fontSize = 18.sp,

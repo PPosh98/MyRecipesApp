@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.myrecipesapp.BuildConfig
 import com.example.myrecipesapp.ui.MainViewModel
 import com.example.myrecipesapp.ui.screens.destinations.FavouriteRecipesScreenDestination
 import com.example.myrecipesapp.ui.screens.destinations.LoginScreenDestination
@@ -104,19 +105,22 @@ fun RecipeDetailsScreen(
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
-                Text(
-                    text = "My Favourite Recipes",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            scope.launch {
-                                scaffoldState.drawerState.close()
-                            }
-                            navigator.navigate(FavouriteRecipesScreenDestination)
-                        }
-                )
+                when {
+                    BuildConfig.FLAVOR.contains("paid") ->
+                        Text(
+                            text = "My Favourite Recipes",
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .clickable {
+                                    scope.launch {
+                                        scaffoldState.drawerState.close()
+                                    }
+                                    navigator.navigate(FavouriteRecipesScreenDestination)
+                                }
+                        )
+                }
                 Text(
                     text = "Logout",
                     fontSize = 18.sp,
@@ -134,12 +138,21 @@ fun RecipeDetailsScreen(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                isFavExists.value = viewModel.handleFavourite(id)
-            }) {
-                isFavExists.value = viewModel.isFavourite(id)
-                if (isFavExists.value) Icon(Icons.Filled.Star, contentDescription = "Added to Favourites")
-                else Icon(Icons.Filled.StarOutline, contentDescription = "Add to Favourites")
+            when {
+                BuildConfig.FLAVOR.contains("paid") ->
+                    FloatingActionButton(onClick = {
+                        isFavExists.value = viewModel.handleFavourite(id)
+                    }) {
+                        isFavExists.value = viewModel.isFavourite(id)
+                        if (isFavExists.value) Icon(
+                            Icons.Filled.Star,
+                            contentDescription = "Added to Favourites"
+                        )
+                        else Icon(
+                            Icons.Filled.StarOutline,
+                            contentDescription = "Add to Favourites"
+                        )
+                    }
             }
         }
     ) { padding ->
