@@ -3,7 +3,6 @@ package com.example.myrecipesapp.repository
 import com.example.myrecipesapp.api.FetchAPI
 import com.example.myrecipesapp.model.recipeInfo.RecipeInfoModel
 import com.example.myrecipesapp.model.recipes.RecipesModel
-import com.example.myrecipesapp.repository.RepositoryImpl
 import com.example.myrecipesapp.roomdb.RecipesDAO
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -16,7 +15,7 @@ import retrofit2.Response
 
 class RepositoryImplTest{
 
-    lateinit var repositoryImpl: RepositoryImpl
+    private lateinit var repositoryImpl: RepositoryImpl
 
     @Mock
     lateinit var fetchAPI: FetchAPI

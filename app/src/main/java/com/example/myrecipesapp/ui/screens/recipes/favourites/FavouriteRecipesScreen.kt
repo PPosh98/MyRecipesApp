@@ -34,7 +34,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @Destination
 @Composable
 fun FavouriteRecipesScreen(
@@ -123,7 +124,7 @@ fun FavouriteRecipesScreen(
                 )
             }
         }
-    ) {
+    ) { _ ->
         if (state.results.isEmpty()){
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -147,6 +148,7 @@ fun FavouriteRecipesScreen(
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun FavouritesList(
     state: FavouritesModel,
@@ -170,7 +172,7 @@ fun FavouritesList(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @Composable
 fun FavouritesListItem(
     item: ResultModel,

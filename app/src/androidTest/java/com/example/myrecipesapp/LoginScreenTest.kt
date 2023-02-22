@@ -9,7 +9,6 @@ import com.example.myrecipesapp.ui.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,7 +16,7 @@ class LoginScreenTest {
     
     @get:Rule
     val rule = createAndroidComposeRule<MainActivity>()
-    val auth: FirebaseAuth = Firebase.auth
+    private val auth: FirebaseAuth = Firebase.auth
 
     @Test
     fun onRegister_showRecipesSearchScreen() {

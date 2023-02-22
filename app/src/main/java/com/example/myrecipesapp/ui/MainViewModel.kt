@@ -1,18 +1,17 @@
 package com.example.myrecipesapp.ui
 
-import com.example.myrecipesapp.ui.screens.recipes.search.ScreenState
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipesapp.model.favouriteRecipes.FavouritesModel
 import com.example.myrecipesapp.model.recipeInfo.RecipeInfoModel
-import com.example.myrecipesapp.ui.pagination.DefaultPaginator
 import com.example.myrecipesapp.model.recipes.RecipesModel
 import com.example.myrecipesapp.model.recipes.ResultModel
 import com.example.myrecipesapp.repository.Repository
 import com.example.myrecipesapp.roomdb.FavouritesEntity
 import com.example.myrecipesapp.roomdb.RecipesEntity
+import com.example.myrecipesapp.ui.pagination.DefaultPaginator
+import com.example.myrecipesapp.ui.screens.recipes.search.ScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,7 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
 
     var screenState by mutableStateOf(ScreenState())
 
-    var recipesListState by mutableStateOf(RecipesModel().results)
+    private var recipesListState by mutableStateOf(RecipesModel().results)
 
     var recipeInfoState by mutableStateOf(RecipeInfoModel())
 
@@ -103,7 +102,6 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                     if (recipesEntity != null) {
                         recipesListState = recipesEntity.recipesModel.results
                         loadNextItems()
-                        Log.i("data", "DB: Showing results from DB")
                     } else {
                         val response = repository.getRecipes(query)
                         if (response.isSuccessful){
@@ -111,29 +109,23 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                                 recipesListState = it.results
                                 addRecipesToDB(it, query)
                                 loadNextItems()
-                                Log.d("FB", "getRecipes(): $recipesListState")
-                                Log.d("FB", "getRecipes() Size: ${recipesListState.size}")
-                                Log.d("FB", "getRecipes() totalResults: ${it.totalResults}")
-                                Log.i("data", "API: Showing results from API")
                             }
                         }
                     }
                 }
             } catch (ex: Exception) {
-//                Log.d("FB", "getRecipes(): ${ex.message}")
             }
         }
     }
 
     private suspend fun getRecipesItems(page: Int, pageSize: Int): Result<List<ResultModel>> {
-        Log.d("FB", "getRecipesItems(): $recipesListState")
         delay(2000L)
         val startingIndex = page * pageSize
         return if(startingIndex + pageSize <= recipesListState.size) {
             Result.success(
                 recipesListState.slice(startingIndex until startingIndex + pageSize)
             )
-        } else if (recipesListState.size > 0 && recipesListState.size < startingIndex + pageSize) {
+        } else if (recipesListState.isNotEmpty() && recipesListState.size < startingIndex + pageSize) {
             val remainder = recipesListState.size - startingIndex
             Result.success(
                 recipesListState.slice(startingIndex until startingIndex + remainder)
@@ -149,11 +141,8 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                     response.body()?.let {
                         recipeInfoState = it
                     }
-                } else{
-                    //Todo
                 }
             } catch (ex: Exception) {
-                //Todo
             }
         }
     }

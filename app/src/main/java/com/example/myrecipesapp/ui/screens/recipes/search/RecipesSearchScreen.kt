@@ -41,7 +41,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @Destination
 @Composable
 fun RecipesSearchScreen(
@@ -139,7 +140,7 @@ fun RecipesSearchScreen(
                 )
             }
         }
-    ) { padding ->
+    ) { _ ->
         RecipesList(
             state = state,
             onLoadNextItems = { viewModel.loadNextItems() },
@@ -148,7 +149,7 @@ fun RecipesSearchScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalComposeUiApi
 @Composable
 fun RecipesSearchBar(
     text: String,
@@ -222,6 +223,7 @@ fun RecipesSearchBar(
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun RecipesList(
     state: ScreenState,
@@ -263,7 +265,7 @@ fun RecipesList(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @Composable
 fun RecipesListItem(
     onNavigate: (Int) -> Unit,

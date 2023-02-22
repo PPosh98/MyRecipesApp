@@ -37,7 +37,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @Destination
 @Composable
 fun RecipeDetailsScreen(

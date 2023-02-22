@@ -38,6 +38,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @RootNavGraph(start = true)
 @Destination
